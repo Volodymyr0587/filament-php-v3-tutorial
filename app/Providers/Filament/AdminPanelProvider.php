@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->colors([
-                'primary' => '#674cc4',
+                'primary' => '#FE2819',
             ])
             ->font('Popins')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
