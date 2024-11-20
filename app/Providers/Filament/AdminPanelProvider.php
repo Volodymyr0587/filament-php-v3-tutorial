@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->colors([
-                'primary' => '#FE2819',
+                'primary' => '#43FE19',
             ])
             ->font('Popins')
             ->favicon('images/laravel-icon.png')
