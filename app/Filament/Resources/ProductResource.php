@@ -6,6 +6,8 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Product;
 use Filament\Forms\Form;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Enums\ProductTypeEnum;
@@ -165,7 +167,15 @@ class ProductResource extends Resource
 
             ])
             ->filters([
-                //
+                TernaryFilter::make('is_visible')
+                    ->label('Visibility')
+                    ->boolean()
+                    ->trueLabel('Only Visible Products')
+                    ->falseLabel('Only Hidden Products')
+                    ->native(false),
+
+                SelectFilter::make('brand')
+                    ->relationship('brand', 'name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
