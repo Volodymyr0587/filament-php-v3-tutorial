@@ -7,6 +7,7 @@ use Filament\Tables;
 use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Enums\ProductTypeEnum;
 use Filament\Resources\Resource;
@@ -39,6 +40,28 @@ class ProductResource extends Resource
     protected static ?string $navigationLabel = 'Products';
     protected static ?string $navigationGroup = 'Shop';
     protected static ?int $navigationSort = 0;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static int $globalSearchResultsLimit = 20;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'slug', 'description'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Brand' => $record->brand->name,
+            // 'Description' => $record->description,
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['brand']);
+    }
 
     public static function form(Form $form): Form
     {

@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => '#43FE19',
             ])
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->font('Popins')
             ->favicon('images/laravel-icon.png')
             // ->darkMode(false)
