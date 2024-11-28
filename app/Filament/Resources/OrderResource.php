@@ -71,7 +71,7 @@ class OrderResource extends Resource
                                 ->numeric()
                                 ->required(),
 
-                            Select::make('type')
+                            Select::make('status')
                                 ->options([
                                     'pending' => OrderStatusEnum::PENDING->value,
                                     'processing' => OrderStatusEnum::PROCESSING->value,
