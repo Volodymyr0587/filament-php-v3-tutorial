@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\BrandResource\RelationManagers\ProductsRelationManager;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Brand;
@@ -137,7 +138,7 @@ class BrandResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 

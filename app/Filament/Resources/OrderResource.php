@@ -2,24 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\OrderStatusEnum;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Wizard;
-use Filament\Forms\Components\Wizard\Step;
+use Filament\Forms\Components\Placeholder;
 use Filament\Tables;
 use App\Models\Order;
+use App\Models\Product;
 use Filament\Forms\Form;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Enums\OrderStatusEnum;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Wizard\Step;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Forms\Components\MarkdownEditor;
 use App\Filament\Resources\OrderResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OrderResource\RelationManagers;
@@ -64,13 +65,19 @@ class OrderResource extends Resource
                                 ->searchable()
                                 ->required(),
 
+                            TextInput::make('shipping_price')
+                                ->label('Shipping Costs')
+                                ->dehydrated()
+                                ->numeric()
+                                ->required(),
+
                             Select::make('type')
                                 ->options([
                                     'pending' => OrderStatusEnum::PENDING->value,
                                     'processing' => OrderStatusEnum::PROCESSING->value,
                                     'completed' => OrderStatusEnum::COMPLETED->value,
                                     'declined' => OrderStatusEnum::DECLINED->value,
-                                ])->columnSpanFull()->required(),
+                                ])->required(),
 
                             MarkdownEditor::make('notes')
                                 ->columnSpanFull()
@@ -83,10 +90,16 @@ class OrderResource extends Resource
                                 ->schema([
                                     Select::make('product_id')
                                         ->label('Product')
-                                        ->options(Product::query()->pluck('name', 'id')),
+                                        ->options(Product::query()->pluck('name', 'id'))
+                                        ->required()
+                                        ->reactive()
+                                        ->afterStateUpdated(fn ($state, Forms\Set $set) =>
+                                        $set('unit_price', Product::find($state)?->price?? 0)),
 
                                     TextInput::make('quantity')
                                         ->numeric()
+                                        ->live()
+                                        ->dehydrated()
                                         ->default(1)
                                         ->required(),
 
@@ -97,7 +110,13 @@ class OrderResource extends Resource
                                         ->dehydrated()
                                         ->required(),
 
-                                ])->columns(3)
+                                    Placeholder::make('total_price')
+                                        ->label('Total Price')
+                                        ->content(function ($get) {
+                                            return $get('quantity') * $get('unit_price');
+                                        })
+
+                                ])->columns(4)
                         ])
                 ])->columnSpanFull(),
             ]);
@@ -119,13 +138,6 @@ class OrderResource extends Resource
                 TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
-
-                TextColumn::make('total_price')
-                    ->searchable()
-                    ->sortable()
-                    ->summarize([
-                        Sum::make()->money()
-                    ]),
 
                 TextColumn::make('created_at')
                     ->label('Order Date')

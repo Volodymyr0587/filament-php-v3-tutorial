@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CategoryResource\RelationManagers\ProductsRelationManager;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -123,7 +124,7 @@ class CategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 
